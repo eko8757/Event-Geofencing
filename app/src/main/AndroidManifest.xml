@@ -15,16 +15,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.Location" />
-        <activity android:name=".ui.SignUp" />
-        <activity android:name=".ui.SignIn" />
-        <activity android:name=".ui.LandingPage" />
-        <activity
-            android:name=".ui.SplashScreen"
-            android:theme="@style/SplashTheme" />
+        <activity android:name=".ui.Location"
+            android:label="Location"/>
+        <activity android:name=".ui.SignUp"
+            android:label="Sign Up"
+            android:parentActivityName=".ui.LandingPage"/>
+        <activity android:name=".ui.SignIn"
+            android:label="Sign In"
+            android:parentActivityName=".ui.LandingPage"/>
+        <activity android:name=".ui.LandingPage"
+            android:theme="@style/SplashTheme"/>
         <activity
             android:name=".ui.MainActivity"
-            android:label="Event List">
+            android:label="Event List"/>
+        <activity
+            android:name=".ui.SplashScreen"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

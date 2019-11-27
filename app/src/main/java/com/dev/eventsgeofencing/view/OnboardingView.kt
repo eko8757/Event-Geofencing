@@ -15,6 +15,7 @@ interface OnboardingView {
     }
 
     interface LandingView {
-
+        fun buttonLogin()
+        fun buttonSignUp()
     }
 }
