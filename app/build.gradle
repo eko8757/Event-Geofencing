@@ -46,6 +46,7 @@ dependencies {
     implementation "androidx.core:core-ktx:$ktxVersion"
     implementation "androidx.constraintlayout:constraintlayout:$constraintVersion"
     implementation "com.mapbox.mapboxsdk:mapbox-android-navigation-ui:$mapboxNavigationVersion"
+    implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-places-v8:$pugin_place"
     implementation('com.mapbox.mapboxsdk:mapbox-android-sdk:8.5.0') {
         exclude group: 'group_name', module: 'module_name'
     }

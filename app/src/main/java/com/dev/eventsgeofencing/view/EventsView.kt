@@ -13,14 +13,6 @@ interface EventsView {
     }
 
     interface EventsDetail {
-        fun getData()
-        fun showData(
-            nama: String,
-            email: String,
-            kontak: String,
-            tanggal: String,
-            keterangan: String,
-            poster: String
-        )
+       fun goToLocation()
     }
 }
