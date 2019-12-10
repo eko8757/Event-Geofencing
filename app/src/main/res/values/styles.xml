@@ -19,4 +19,9 @@
         <item name="android:textColor">@color/colorText</item>
     </style>
 
+    <style name="CustomDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!--dialog background-->
+        <item name="android:windowBackground">@drawable/bg_custom_alert</item>
+    </style>
+
 </resources>

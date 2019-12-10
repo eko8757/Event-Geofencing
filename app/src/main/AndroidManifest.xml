@@ -6,28 +6,39 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
 
     <application
+        android:name=".utils.Preferences"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:hardwareAccelerated="false"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.Location"
-            android:label="Location"/>
-        <activity android:name=".ui.SignUp"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning,UnusedAttribute">
+        <activity android:name=".ui.DetailActivity"
+            android:label="Detail Event"
+            android:parentActivityName=".ui.MainActivity"/>
+        <activity
+            android:name=".ui.Location"
+            android:label="Location" />
+        <activity
+            android:name=".ui.SignUp"
             android:label="Sign Up"
-            android:parentActivityName=".ui.LandingPage"/>
-        <activity android:name=".ui.SignIn"
+            android:parentActivityName=".ui.LandingPage" />
+        <activity
+            android:name=".ui.SignIn"
             android:label="Sign In"
-            android:parentActivityName=".ui.LandingPage"/>
-        <activity android:name=".ui.LandingPage"
-            android:theme="@style/SplashTheme"/>
+            android:parentActivityName=".ui.LandingPage" />
+        <activity
+            android:name=".ui.LandingPage"
+            android:theme="@style/SplashTheme" />
         <activity
             android:name=".ui.MainActivity"
-            android:label="Event List"/>
+            android:label="Event List" />
         <activity
             android:name=".ui.SplashScreen"
             android:theme="@style/SplashTheme">
