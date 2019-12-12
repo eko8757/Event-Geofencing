@@ -29,6 +29,7 @@ class Location : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapBoxMap = mapboxMap
         this.mapBoxMap.setStyle(Style.MAPBOX_STREETS)
+
     }
 
     private fun initMapView(savedInstanceState: Bundle?) {

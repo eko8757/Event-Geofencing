@@ -1,6 +1,6 @@
 package com.dev.eventsgeofencing.presenter
 
-import com.dev.eventsgeofencing.model.Response.ResponseEvents
+import com.dev.eventsgeofencing.model.response.ResponseEvents
 import com.dev.eventsgeofencing.services.BaseApi
 import com.dev.eventsgeofencing.view.EventsView
 import io.reactivex.android.schedulers.AndroidSchedulers

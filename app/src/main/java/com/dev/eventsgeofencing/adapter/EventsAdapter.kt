@@ -3,11 +3,10 @@ package com.dev.eventsgeofencing.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.recyclerview.widget.RecyclerView
 import com.dev.eventsgeofencing.BuildConfig
 import com.dev.eventsgeofencing.R
-import com.dev.eventsgeofencing.model.Response.ResponseEvents
+import com.dev.eventsgeofencing.model.response.ResponseEvents
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_list.view.*
 

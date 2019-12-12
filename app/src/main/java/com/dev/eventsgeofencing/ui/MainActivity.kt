@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dev.eventsgeofencing.R
 import com.dev.eventsgeofencing.adapter.EventsAdapter
-import com.dev.eventsgeofencing.model.Response.ResponseEvents
+import com.dev.eventsgeofencing.model.response.ResponseEvents
 import com.dev.eventsgeofencing.presenter.EventsPresenter
 import com.dev.eventsgeofencing.services.BaseApi
 import com.dev.eventsgeofencing.view.EventsView

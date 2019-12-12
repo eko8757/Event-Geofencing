@@ -1,11 +1,10 @@
 package com.dev.eventsgeofencing.services
 
-import com.dev.eventsgeofencing.BuildConfig
-import com.dev.eventsgeofencing.model.Post.PostLogin
-import com.dev.eventsgeofencing.model.Post.PostRegister
-import com.dev.eventsgeofencing.model.Response.ResponseEvents
-import com.dev.eventsgeofencing.model.Response.ResponseLogin
-import com.dev.eventsgeofencing.model.Response.ResponseRegister
+import com.dev.eventsgeofencing.model.post.PostLogin
+import com.dev.eventsgeofencing.model.post.PostRegister
+import com.dev.eventsgeofencing.model.response.ResponseEvents
+import com.dev.eventsgeofencing.model.response.ResponseLogin
+import com.dev.eventsgeofencing.model.response.ResponseRegister
 import com.google.gson.GsonBuilder
 import io.reactivex.Observable
 import okhttp3.OkHttpClient
@@ -25,16 +24,17 @@ interface BaseApi {
     ) : Observable<ResponseEvents>
 
     @POST("json_addUser.php")
-    fun postRegister(
+    fun postDataRegister(
         @Body postRegister : PostRegister?
-    ) : Observable<ResponseRegister>
+    ) : Observable<Response<ResponseRegister>>
 
     @POST("json_ShowUser.php")
-    fun postLogin(
+    fun postDataLogin(
         @Body postLogin : PostLogin?
     ) : Observable<Response<ResponseLogin>>
 
     companion object {
+        var URL: String = "https://ichaamelia.com/"
         fun create(): BaseApi {
             val gson = GsonBuilder()
                 .setLenient()
@@ -48,7 +48,7 @@ interface BaseApi {
                 .build()
             val client = clientBuilder.build()
             val retrofit = Retrofit.Builder()
-                .baseUrl(BuildConfig.BASE_URL)
+                .baseUrl(URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

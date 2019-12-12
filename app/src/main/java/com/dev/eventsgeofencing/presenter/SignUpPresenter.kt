@@ -1,43 +1,39 @@
 package com.dev.eventsgeofencing.presenter
 
-import android.util.Log
-import com.dev.eventsgeofencing.model.Post.PostRegister
-import com.dev.eventsgeofencing.model.Response.ResponseRegister
+import com.dev.eventsgeofencing.model.post.PostRegister
+import com.dev.eventsgeofencing.model.response.ResponseRegister
 import com.dev.eventsgeofencing.services.BaseApi
 import com.dev.eventsgeofencing.view.OnboardingView
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
+import retrofit2.Response
 
-class SignUpPresenter(val view: OnboardingView.SignUpView, val factory: BaseApi) {
+class SignUpPresenter(val view: OnboardingView.SignUpView, private val factory: BaseApi) {
 
     private var mCompositeDisposable: CompositeDisposable? = null
 
-    fun postData(nama: String, email: String, kontak: String, password: String) {
+    fun postData(namaResult: String, emailResult: String, kontakResult: String, passwordResult: String) {
         view.showProgress()
-        val dataRegister = PostRegister()
-        dataRegister.nama = nama
-        dataRegister.email = email
-        dataRegister.kontak = kontak
-        dataRegister.password = password
+        val dataRegister = PostRegister(namaResult, emailResult, kontakResult, passwordResult)
         mCompositeDisposable = CompositeDisposable()
         mCompositeDisposable?.add(
-            factory.postRegister(dataRegister)
+            factory.postDataRegister(dataRegister)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribeWith(object : DisposableObserver<ResponseRegister>() {
+                .subscribeWith(object : DisposableObserver<Response<ResponseRegister>>() {
                     override fun onComplete() {
                         view.hideProgress()
                     }
 
-                    override fun onNext(t: ResponseRegister) {
-                        if (t.code == "200") {
+                    override fun onNext(t: Response<ResponseRegister>) {
+                        if (t.code() == 200) {
                             view.successRegister()
                             view.hideProgress()
                         } else {
                             view.hideProgress()
-                            view.showDialog(t.message.toString())
+                            view.showDialog(t.body()?.message.toString())
                         }
                     }
 

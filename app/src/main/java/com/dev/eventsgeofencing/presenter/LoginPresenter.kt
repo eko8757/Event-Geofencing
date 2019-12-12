@@ -1,8 +1,8 @@
 package com.dev.eventsgeofencing.presenter
 
 import android.util.Log
-import com.dev.eventsgeofencing.model.Post.PostLogin
-import com.dev.eventsgeofencing.model.Response.ResponseLogin
+import com.dev.eventsgeofencing.model.post.PostLogin
+import com.dev.eventsgeofencing.model.response.ResponseLogin
 import com.dev.eventsgeofencing.services.BaseApi
 import com.dev.eventsgeofencing.utils.StaticString
 import com.dev.eventsgeofencing.view.OnboardingView
@@ -20,15 +20,10 @@ class LoginPresenter(val view: OnboardingView.SignInView, private val factory: B
     fun postLogin(username: String, password: String) {
 
         view.showProgress()
-        val dataLogin = PostLogin()
-        dataLogin.nama = username
-        dataLogin.password = password
-        Log.d("RESULT_FIELD", username)
-        Log.d("RESULT_FIELD", password)
-
+        val dataLogin = PostLogin(username, password)
         mCompositeDisposable = CompositeDisposable()
         mCompositeDisposable?.add(
-            factory.postLogin(dataLogin)
+            factory.postDataLogin(dataLogin)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribeWith(object : DisposableObserver<Response<ResponseLogin>>() {
@@ -37,7 +32,7 @@ class LoginPresenter(val view: OnboardingView.SignInView, private val factory: B
                     }
 
                     override fun onNext(t: Response<ResponseLogin>) {
-                        if (t.body()?.code == "200") {
+                        if (t.code() == 200) {
                             val resultToken = t.body()?.token
                             Prefs.putString(StaticString().TOKEN, resultToken)
                             view.successLogin()

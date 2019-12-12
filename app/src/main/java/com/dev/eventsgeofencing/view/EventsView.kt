@@ -1,7 +1,6 @@
 package com.dev.eventsgeofencing.view
 
-import android.content.Context
-import com.dev.eventsgeofencing.model.Response.ResponseEvents
+import com.dev.eventsgeofencing.model.response.ResponseEvents
 
 interface EventsView {
 

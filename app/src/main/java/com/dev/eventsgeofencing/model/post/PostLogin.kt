@@ -1,14 +1,14 @@
-package com.dev.eventsgeofencing.model.Post
+package com.dev.eventsgeofencing.model.post
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-class PostLogin {
+data class PostLogin(
     @SerializedName("nama")
     @Expose
-    var nama: String? = null
+    var nama: String?,
 
     @SerializedName("password")
     @Expose
-    var password: String? = null
-}
+    var password: String?
+)

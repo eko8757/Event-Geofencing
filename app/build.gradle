@@ -20,12 +20,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "String", "EVENT_PATH", "\"http://ichaamelia.com/assets/img/\""
-            buildConfigField "String", "BASE_URL", "\"https://ichaamelia.com/\""
         }
 
         debug {
             buildConfigField "String", "EVENT_PATH", "\"http://ichaamelia.com/assets/img/\""
-            buildConfigField "String", "BASE_URL", "\"https://ichaamelia.com/\""
         }
     }
 

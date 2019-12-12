@@ -1,4 +1,4 @@
-package com.dev.eventsgeofencing.model.Response
+package com.dev.eventsgeofencing.model.response
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName

@@ -16,6 +16,7 @@ import com.dev.eventsgeofencing.utils.ConnectionDetector
 import com.dev.eventsgeofencing.view.OnboardingView
 import kotlinx.android.synthetic.main.activity_sign_up.*
 
+@Suppress("DEPRECATION")
 class SignUp : AppCompatActivity(), OnboardingView.SignUpView, View.OnClickListener {
 
     private lateinit var progressDialog: ProgressDialog
@@ -40,14 +41,18 @@ class SignUp : AppCompatActivity(), OnboardingView.SignUpView, View.OnClickListe
     }
 
     override fun checkForm() {
-        val nama: String = ed_username.text.toString()
-        val email: String = ed_email.text.toString()
-        val kontak: String = ed_kontak.text.toString()
-        val password: String = ed_password.text.toString()
-        if (connectionDetector.isConnectingToInternet(context = this)) {
-            presenter.postData(nama, email, kontak, password)
+        val nama = ed_username.text.toString()
+        val email = ed_email.text.toString()
+        val kontak = ed_kontak.text.toString()
+        val password = ed_password.text.toString()
+        if (nama.isEmpty() && email.isEmpty() && kontak.isEmpty() && password.isEmpty()) {
+            showToast("Field cannot be empty")
         } else {
-            showToast("Connection lost")
+            if (connectionDetector.isConnectingToInternet(context = this)) {
+                presenter.postData(nama, email, kontak, password)
+            } else {
+                showToast("Connection lost")
+            }
         }
     }
 

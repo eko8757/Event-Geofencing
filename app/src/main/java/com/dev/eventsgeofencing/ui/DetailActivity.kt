@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import com.dev.eventsgeofencing.BuildConfig
 import com.dev.eventsgeofencing.R
-import com.dev.eventsgeofencing.model.Response.ResponseEvents
+import com.dev.eventsgeofencing.model.response.ResponseEvents
 import com.dev.eventsgeofencing.view.EventsView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_detail.*
