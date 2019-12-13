@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import com.dev.eventsgeofencing.R
+import com.dev.eventsgeofencing.utils.StaticString
+import com.pixplicity.easyprefs.library.Prefs
 
 class SplashScreen : AppCompatActivity() {
 
@@ -21,9 +23,16 @@ class SplashScreen : AppCompatActivity() {
 
     internal val mRunnable: Runnable = Runnable {
         if (!isFinishing) {
-            val i = Intent(this, LandingPage::class.java)
-            startActivity(i)
-            finish()
+            val token = Prefs.getString(StaticString().TOKEN, "")
+            if (token != "") {
+                val i = Intent(this, MainActivity::class.java)
+                startActivity(i)
+                finish()
+            } else {
+                val i = Intent(this, LandingPage::class.java)
+                startActivity(i)
+                finish()
+            }
         }
     }
 

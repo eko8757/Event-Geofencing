@@ -10,12 +10,18 @@ import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import kotlinx.android.synthetic.main.activity_location.*
 
 class Location : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var permissionManager: PermissionsManager
     private lateinit var mapBoxMap: MapboxMap
+    private val geojsonSourceLayerID = "geojsonSourceLayerId"
+    private val symbolIconID = "symbolIconId"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,12 +34,24 @@ class Location : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapBoxMap = mapboxMap
-        this.mapBoxMap.setStyle(Style.MAPBOX_STREETS)
-
+        this.mapBoxMap.setStyle(Style.MAPBOX_STREETS) {
+            setupSource(it)
+            setupPlayer(it)
+        }
     }
 
     private fun initMapView(savedInstanceState: Bundle?) {
         maps_view.onCreate(savedInstanceState)
+    }
+
+    private fun setupSource(loadedMapStyle: Style) {
+        loadedMapStyle.addSource(GeoJsonSource(geojsonSourceLayerID))
+    }
+
+    private fun setupPlayer(loadedMapStyle: Style) {
+        loadedMapStyle.addLayer(
+            SymbolLayer("SYMBOL_LAYER_ID", geojsonSourceLayerID).withProperties(iconImage(symbolIconID), iconOffset(
+            arrayOf(0f, -8f))))
     }
 
     private fun initPermissions() {

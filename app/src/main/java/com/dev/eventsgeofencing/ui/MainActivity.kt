@@ -6,6 +6,8 @@ import android.app.ProgressDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.dev.eventsgeofencing.R
@@ -13,7 +15,9 @@ import com.dev.eventsgeofencing.adapter.EventsAdapter
 import com.dev.eventsgeofencing.model.response.ResponseEvents
 import com.dev.eventsgeofencing.presenter.EventsPresenter
 import com.dev.eventsgeofencing.services.BaseApi
+import com.dev.eventsgeofencing.utils.StaticString
 import com.dev.eventsgeofencing.view.EventsView
+import com.pixplicity.easyprefs.library.Prefs
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), EventsView.EventsList {
@@ -25,7 +29,6 @@ class MainActivity : AppCompatActivity(), EventsView.EventsList {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         val factory: BaseApi = BaseApi.create()
         presenter = EventsPresenter(this, factory)
         presenter.getData()
@@ -55,5 +58,22 @@ class MainActivity : AppCompatActivity(), EventsView.EventsList {
         }
         recycler_main.adapter = adapter
         adapter.notifyDataSetChanged()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.logout -> {
+                Prefs.remove(StaticString().TOKEN)
+                val i = Intent(this, LandingPage::class.java)
+                startActivity(i)
+                finish()
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

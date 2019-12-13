@@ -33,7 +33,7 @@ class LoginPresenter(val view: OnboardingView.SignInView, private val factory: B
 
                     override fun onNext(t: Response<ResponseLogin>) {
                         if (t.code() == 200) {
-                            val resultToken = t.body()?.token
+                            val resultToken = t.body()?.token.toString()
                             Prefs.putString(StaticString().TOKEN, resultToken)
                             view.successLogin()
                             view.hideProgress()
