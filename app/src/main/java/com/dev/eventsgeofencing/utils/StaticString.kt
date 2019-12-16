@@ -4,4 +4,5 @@ class StaticString {
     val USERNAME = "Username"
     val PASSWORD = "Password"
     val TOKEN = "Token"
+    val REMINDERS = "REMINDERS"
 }

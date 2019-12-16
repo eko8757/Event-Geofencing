@@ -18,7 +18,11 @@ class DetailActivity : AppCompatActivity(), EventsView.EventsDetail, View.OnClic
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
+        loadData()
+        btn_go_to_location.setOnClickListener(this)
+    }
 
+    private fun loadData() {
         val i = intent
         item = i.getParcelableExtra("idEvent")
 
@@ -28,8 +32,6 @@ class DetailActivity : AppCompatActivity(), EventsView.EventsDetail, View.OnClic
         tv_email_detail.text = item?.email
         tv_desc_detail.text = item?.keterangan
         Picasso.get().load(BuildConfig.EVENT_PATH + item?.poster).into(img_detail)
-
-        btn_go_to_location.setOnClickListener(this)
     }
 
     override fun onClick(p0: View?) {
@@ -39,9 +41,14 @@ class DetailActivity : AppCompatActivity(), EventsView.EventsDetail, View.OnClic
     }
 
     override fun goToLocation() {
-        val i = Intent(this, Location::class.java)
+        val i = Intent(this, GoogleLocation::class.java)
 //        i.putExtra("longitude", item?.longitude)
 //        i.putExtra("latitude", item?.latitude)
         startActivity(i)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        loadData()
     }
 }

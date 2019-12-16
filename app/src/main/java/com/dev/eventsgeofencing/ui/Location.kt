@@ -7,6 +7,8 @@ import com.dev.eventsgeofencing.R
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.location.modes.CameraMode
+import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
@@ -35,9 +37,18 @@ class Location : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapBoxMap = mapboxMap
         this.mapBoxMap.setStyle(Style.MAPBOX_STREETS) {
+            showingDeviceLocation(mapboxMap)
             setupSource(it)
             setupPlayer(it)
         }
+    }
+
+    private fun showingDeviceLocation(mapboxMap: MapboxMap) {
+        val locationComponent = mapboxMap.locationComponent
+        locationComponent.activateLocationComponent(this, mapBoxMap.style!!)
+        locationComponent.isLocationComponentEnabled = true
+        locationComponent.cameraMode = CameraMode.TRACKING
+        locationComponent.renderMode = RenderMode.COMPASS
     }
 
     private fun initMapView(savedInstanceState: Bundle?) {
