@@ -42,8 +42,8 @@ class DetailActivity : AppCompatActivity(), EventsView.EventsDetail, View.OnClic
 
     override fun goToLocation() {
         val i = Intent(this, GoogleLocation::class.java)
-//        i.putExtra("longitude", item?.longitude)
-//        i.putExtra("latitude", item?.latitude)
+        i.putExtra("longitude", item?.longitude)
+        i.putExtra("latitude", item?.latitude)
         startActivity(i)
     }
 

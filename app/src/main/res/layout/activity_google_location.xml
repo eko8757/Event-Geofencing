@@ -26,14 +26,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
+            android:backgroundTint="@color/colorWhite"
             app:srcCompat="@drawable/ic_baseline_my_location_24px" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/newReminder"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            app:srcCompat="@drawable/ic_baseline_add_24px" />
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

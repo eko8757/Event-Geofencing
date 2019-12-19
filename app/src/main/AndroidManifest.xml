@@ -20,9 +20,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning,UnusedAttribute">
-        <activity android:name=".ui.GoogleLocation"
+        <activity
+            android:name=".ui.GoogleLocation"
             android:label="Location"
-            android:parentActivityName=".ui.DetailActivity"/>
+            android:parentActivityName=".ui.DetailActivity" />
         <activity
             android:name=".ui.DetailActivity"
             android:label="Detail Event"
@@ -56,10 +57,22 @@
             </intent-filter>
         </activity>
 
+        <receiver
+            android:name=".receiver.GeofenceBroadcasrReceiver"
+            android:enabled="true"
+            android:exported="true" />
+
+        <service
+            android:name=".receiver.GeofenceTransitionIntentService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key"/>
-        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+            android:value="@string/google_maps_key" />
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
     </application>
 
 </manifest>

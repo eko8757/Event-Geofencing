@@ -2,10 +2,10 @@ package com.dev.eventsgeofencing.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.Criteria
 import android.location.LocationManager
 import androidx.appcompat.app.AppCompatActivity
@@ -14,25 +14,28 @@ import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.dev.eventsgeofencing.R
+import com.dev.eventsgeofencing.utils.visible
+import com.dev.eventsgeofencing.view.EventsView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_google_location.*
 
 class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private var map: GoogleMap? = null
     private lateinit var locationManager: LocationManager
+    private lateinit var latitude: String
+    private lateinit var longitude: String
 
     companion object {
         private const val MY_LOCATION_REQUEST_CODE = 329
         private const val NEW_REMINDER_REQUEST_CODE = 330
         private const val EXTRA_LAT_LNG = "EXTRA_LAT_LNG"
 
-        fun newIntent(context: Context, latLng: LatLng) : Intent {
+        fun newIntent(context: Context, latLng: LatLng): Intent {
             val intent = Intent(context, GoogleLocation::class.java)
             intent.putExtra(EXTRA_LAT_LNG, latLng)
             return intent
@@ -58,10 +61,14 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMark
                 MY_LOCATION_REQUEST_CODE
             )
         }
+
+        val i = intent
+        latitude = i.getStringExtra("latitude")
+        longitude = i.getStringExtra("longitude")
     }
 
-    override fun onMapReady(p0: GoogleMap?) {
-        map = p0
+    override fun onMapReady(googleMap: GoogleMap?) {
+        map = googleMap
         map?.run {
             uiSettings.isMyLocationButtonEnabled = false
             uiSettings.isMapToolbarEnabled = false
@@ -70,21 +77,21 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMark
         onMapPermissionReady()
     }
 
-    override fun onMarkerClick(p0: Marker?): Boolean {
+    override fun onMarkerClick(marker: Marker?): Boolean {
         return true
     }
 
     @SuppressLint("RestrictedApi")
     private fun onMapPermissionReady() {
         if (map != null
-            && ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            == PackageManager.PERMISSION_GRANTED
+            && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
         ) {
+
+            map?.addMarker(MarkerOptions().position(LatLng(latitude.toDouble(), longitude.toDouble()))
+                .icon(BitmapDescriptorFactory.defaultMarker()))
+            drawCircle(LatLng(latitude.toDouble(), longitude.toDouble()))
+
             map?.isMyLocationEnabled = true
-            newReminder.visibility = View.VISIBLE
             currentLocation.visibility = View.VISIBLE
 
             currentLocation.setOnClickListener {
@@ -92,11 +99,22 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMark
                 val location = locationManager.getLastKnownLocation(bestProvider)
                 if (location != null) {
                     val latLng = LatLng(location.latitude, location.longitude)
-                    map?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+                    map?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f))
                 }
             }
+
             centerCamera()
         }
+    }
+
+    private fun drawCircle(point: LatLng) {
+        val circleOptions = CircleOptions()
+        circleOptions.center(point)
+        circleOptions.radius(1000.toDouble())
+        circleOptions.strokeColor(Color.BLACK)
+        circleOptions.fillColor(0x30ff0000)
+        circleOptions.strokeWidth(2f)
+        map?.addCircle(circleOptions)
     }
 
     private fun centerCamera() {
@@ -105,6 +123,7 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMark
             map?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
         }
     }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -115,5 +134,4 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMark
             onMapPermissionReady()
         }
     }
-
 }
