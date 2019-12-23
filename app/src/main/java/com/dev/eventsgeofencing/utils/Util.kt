@@ -5,13 +5,21 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Build
 import android.view.View
+import androidx.annotation.DrawableRes
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import com.dev.eventsgeofencing.BuildConfig
 import com.dev.eventsgeofencing.R
+import com.dev.eventsgeofencing.notification.Reminder
 import com.dev.eventsgeofencing.ui.GoogleLocation
-import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.*
 
 fun View.visible() {
     visibility = View.VISIBLE
@@ -52,6 +60,22 @@ fun sendNotification(context: Context, message: String, latLng: LatLng) {
         .build()
 
     notificationManager.notify(getUniqueId(), notification)
+}
+
+fun showReminderInMap(context: Context, map: GoogleMap, reminder: Reminder) {
+    if (reminder.latLng != null) {
+        val latLng = reminder.latLng as LatLng
+        val marker = map.addMarker(MarkerOptions().position(latLng).icon(BitmapDescriptorFactory.defaultMarker()))
+        marker.tag = reminder.id
+        if (reminder.radius != null) {
+            val radius = reminder.radius as Double
+            map.addCircle(CircleOptions()
+                .center(reminder.latLng)
+                .radius(radius)
+                .strokeColor(ContextCompat.getColor(context, R.color.colorWhite))
+                .fillColor(ContextCompat.getColor(context, R.color.colorFillMap)))
+        }
+    }
 }
 
 private fun getUniqueId() = ((System.currentTimeMillis() % 10000).toInt())

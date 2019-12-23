@@ -8,14 +8,14 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Criteria
 import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.dev.eventsgeofencing.R
-import com.dev.eventsgeofencing.utils.visible
-import com.dev.eventsgeofencing.view.EventsView
+import com.dev.eventsgeofencing.notification.BaseReminder
+import com.dev.eventsgeofencing.notification.Reminder
+import com.dev.eventsgeofencing.utils.showReminderInMap
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -23,12 +23,13 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_google_location.*
 
-class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+class GoogleLocation : BaseReminder(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private var map: GoogleMap? = null
     private lateinit var locationManager: LocationManager
     private lateinit var latitude: String
     private lateinit var longitude: String
+    private var reminder = Reminder(latLng = null, radius = null, message = null)
 
     companion object {
         private const val MY_LOCATION_REQUEST_CODE = 329
@@ -62,9 +63,15 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMark
             )
         }
 
+        //for put extra data lat & lng from detail activity
         val i = intent
         latitude = i.getStringExtra("latitude")
         longitude = i.getStringExtra("longitude")
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
@@ -86,14 +93,11 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMark
         if (map != null
             && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
         ) {
-
-            map?.addMarker(MarkerOptions().position(LatLng(latitude.toDouble(), longitude.toDouble()))
-                .icon(BitmapDescriptorFactory.defaultMarker()))
             drawCircle(LatLng(latitude.toDouble(), longitude.toDouble()))
-
             map?.isMyLocationEnabled = true
             currentLocation.visibility = View.VISIBLE
 
+            //go to current device locations
             currentLocation.setOnClickListener {
                 val bestProvider = locationManager.getBestProvider(Criteria(), false)
                 val location = locationManager.getLastKnownLocation(bestProvider)
@@ -102,19 +106,26 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMark
                     map?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f))
                 }
             }
-
             centerCamera()
         }
     }
 
+    //for add radius in target locations
     private fun drawCircle(point: LatLng) {
-        val circleOptions = CircleOptions()
-        circleOptions.center(point)
-        circleOptions.radius(1000.toDouble())
-        circleOptions.strokeColor(Color.BLACK)
-        circleOptions.fillColor(0x30ff0000)
-        circleOptions.strokeWidth(2f)
-        map?.addCircle(circleOptions)
+        val valueRadius = getRadius(1000)
+        reminder.radius = valueRadius
+        reminder.latLng = point
+        reminder.message = "Sudah sampai tujuan!"
+        showReminderUpdate(reminder)
+    }
+
+    private fun showReminderUpdate(reminder: Reminder) {
+        map?.clear()
+        showReminderInMap(this, map!!, reminder)
+    }
+
+    private fun getRadius(radius: Int) : Double {
+        return radius.toDouble()
     }
 
     private fun centerCamera() {
