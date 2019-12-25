@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
-        android:name=".utils.Preferences"
+        android:name=".notification.ReminderApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher"
@@ -23,33 +23,41 @@
         <activity
             android:name=".ui.GoogleLocation"
             android:label="Location"
-            android:parentActivityName=".ui.DetailActivity" />
+            android:parentActivityName=".ui.DetailActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.DetailActivity"
             android:label="Detail Event"
             android:launchMode="singleTask"
-            android:parentActivityName=".ui.MainActivity" />
+            android:parentActivityName=".ui.MainActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.Location"
             android:label="Location"
-            android:parentActivityName=".ui.DetailActivity" />
+            android:parentActivityName=".ui.DetailActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.SignUp"
             android:label="Sign Up"
-            android:parentActivityName=".ui.LandingPage" />
+            android:parentActivityName=".ui.LandingPage"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.SignIn"
             android:label="Sign In"
-            android:parentActivityName=".ui.LandingPage" />
+            android:parentActivityName=".ui.LandingPage"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.LandingPage"
-            android:theme="@style/SplashTheme" />
+            android:theme="@style/SplashTheme"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.MainActivity"
-            android:label="Event List" />
+            android:label="Event List"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.SplashScreen"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/SplashTheme"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -60,7 +68,8 @@
         <receiver
             android:name=".receiver.GeofenceBroadcasrReceiver"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"
+            tools:ignore="ExportedReceiver" />
 
         <service
             android:name=".receiver.GeofenceTransitionIntentService"

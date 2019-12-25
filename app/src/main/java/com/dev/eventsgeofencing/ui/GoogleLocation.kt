@@ -2,10 +2,10 @@ package com.dev.eventsgeofencing.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.location.Criteria
 import android.location.LocationManager
 import android.os.Bundle
@@ -21,6 +21,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_google_location.*
 
 class GoogleLocation : BaseReminder(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
@@ -67,6 +68,9 @@ class GoogleLocation : BaseReminder(), OnMapReadyCallback, GoogleMap.OnMarkerCli
         val i = intent
         latitude = i.getStringExtra("latitude")
         longitude = i.getStringExtra("longitude")
+
+//        latitude = "-7.935099"
+//        longitude = "112.623826"
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -116,12 +120,33 @@ class GoogleLocation : BaseReminder(), OnMapReadyCallback, GoogleMap.OnMarkerCli
         reminder.radius = valueRadius
         reminder.latLng = point
         reminder.message = "Sudah sampai tujuan!"
+        addReminder(reminder)
         showReminderUpdate(reminder)
     }
 
     private fun showReminderUpdate(reminder: Reminder) {
         map?.clear()
-        showReminderInMap(this, map!!, reminder)
+        map?.let { showReminderInMap(this, it, reminder) }
+    }
+
+    private fun showReminders() {
+        map?.run {
+            clear()
+            for (reminder in getRepository().getAll()) {
+                showReminderInMap(this@GoogleLocation, this, reminder)
+            }
+        }
+    }
+
+    private fun addReminder(reminder: Reminder) {
+        getRepository().add(reminder,
+            success = {
+                setResult(Activity.RESULT_OK)
+                finish()
+            },
+            failure = {
+                Snackbar.make(main, it, Snackbar.LENGTH_SHORT).show()
+            })
     }
 
     private fun getRadius(radius: Int) : Double {
@@ -135,7 +160,6 @@ class GoogleLocation : BaseReminder(), OnMapReadyCallback, GoogleMap.OnMarkerCli
         }
     }
 
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -143,6 +167,16 @@ class GoogleLocation : BaseReminder(), OnMapReadyCallback, GoogleMap.OnMarkerCli
     ) {
         if (requestCode == MY_LOCATION_REQUEST_CODE) {
             onMapPermissionReady()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == NEW_REMINDER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            showReminders()
+            val reminder = getRepository().getLast()
+            map?.moveCamera(CameraUpdateFactory.newLatLngZoom(reminder?.latLng, 15f))
+            Snackbar.make(main, "Success", Snackbar.LENGTH_SHORT).show()
         }
     }
 }

@@ -13,7 +13,10 @@ import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import retrofit2.Response
 
-class LoginPresenter(val view: OnboardingView.SignInView, private val factory: BaseApi) {
+class LoginPresenter(
+    val view: OnboardingView.SignInView,
+    private val factory: BaseApi
+) {
 
     private var mCompositeDisposable: CompositeDisposable? = null
 
