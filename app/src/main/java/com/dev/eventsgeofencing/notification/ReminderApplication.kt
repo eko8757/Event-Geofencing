@@ -1,9 +1,11 @@
 package com.dev.eventsgeofencing.notification
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ContextWrapper
 import com.pixplicity.easyprefs.library.Prefs
 
+@SuppressLint("Registered")
 class ReminderApplication : Application() {
 
     private lateinit var repository: ReminderRepository

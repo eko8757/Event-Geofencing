@@ -17,12 +17,6 @@ import com.pixplicity.easyprefs.library.Prefs
 
 class ReminderRepository(private val context: Context) {
 
-    companion object {
-        private const val PREFS_NAME = "ReminderRepository"
-        private const val REMINDERS = "REMINDERS"
-    }
-
-    private val preferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     private val gson = Gson()
     private val geofancingClient = LocationServices.getGeofencingClient(context)
     private val geofencePendingIntent: PendingIntent by lazy {
@@ -61,16 +55,13 @@ class ReminderRepository(private val context: Context) {
     }
 
     private fun saveAll(list: List<Reminder>) {
-        preferences
-            .edit()
-            .putString(REMINDERS, gson.toJson(list))
-            .apply()
+        Prefs.putString(StaticString().REMINDERS, gson.toJson(list))
     }
 
     fun getAll() : List<Reminder> {
-//        val strReminders = Prefs.getString(StaticString().REMINDERS, "")
-        if (preferences.contains(REMINDERS)) {
-            val remindersString = preferences.getString(REMINDERS, null)
+        val strReminders = Prefs.getString(StaticString().REMINDERS, "")
+        if (strReminders.contains("REMINDERS")) {
+            val remindersString = Prefs.getString(StaticString().REMINDERS, null)
             val arrayOfReminders = gson.fromJson(remindersString, Array<Reminder>::class.java)
 
             if (arrayOfReminders != null) {
@@ -86,17 +77,6 @@ class ReminderRepository(private val context: Context) {
             .addGeofences(listOf(geofence))
             .build()
     }
-
-//    fun remove(reminder: Reminder, success: () -> Unit, failure: (error: String) -> Unit) {
-//        geofancingClient.removeGeofences(listOf(reminder.id))
-//            .addOnSuccessListener {
-//                saveAll(getAll() - reminder)
-//                success()
-//            }
-//            .addOnFailureListener {
-//                failure(GeofenceErrorMessage.getErrorString(context, it))
-//            }
-//    }
 
     fun get(requestId: String?) = getAll().firstOrNull { it.id == requestId }
     fun getLast() = getAll().lastOrNull()

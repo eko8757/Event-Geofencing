@@ -68,9 +68,6 @@ class GoogleLocation : BaseReminder(), OnMapReadyCallback, GoogleMap.OnMarkerCli
         val i = intent
         latitude = i.getStringExtra("latitude")
         longitude = i.getStringExtra("longitude")
-
-//        latitude = "-7.935099"
-//        longitude = "112.623826"
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -95,7 +92,10 @@ class GoogleLocation : BaseReminder(), OnMapReadyCallback, GoogleMap.OnMarkerCli
     @SuppressLint("RestrictedApi")
     private fun onMapPermissionReady() {
         if (map != null
-            && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            && ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
         ) {
             drawCircle(LatLng(latitude.toDouble(), longitude.toDouble()))
             map?.isMyLocationEnabled = true
@@ -149,7 +149,7 @@ class GoogleLocation : BaseReminder(), OnMapReadyCallback, GoogleMap.OnMarkerCli
             })
     }
 
-    private fun getRadius(radius: Int) : Double {
+    private fun getRadius(radius: Int): Double {
         return radius.toDouble()
     }
 

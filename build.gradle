@@ -20,8 +20,8 @@ buildscript {
         converterGsonVersion = '2.6.0'
         rxAndroidVersion = '2.1.1'
         materialVersion = '1.0.0'
-        play_services_maps = '16.0.0'
-        play_services_location = '16.0.0'
+        play_services_maps = '17.0.0'
+        play_services_location = '17.0.0'
     }
     repositories {
         google()

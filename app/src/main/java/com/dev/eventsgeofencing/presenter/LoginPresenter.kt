@@ -17,7 +17,6 @@ class LoginPresenter(
     val view: OnboardingView.SignInView,
     private val factory: BaseApi
 ) {
-
     private var mCompositeDisposable: CompositeDisposable? = null
 
     fun postLogin(username: String, password: String) {
