@@ -5,7 +5,6 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -26,7 +25,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.gms.maps.model.PolygonOptions
 
 class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener,
     GoogleApiClient.ConnectionCallbacks, ResultCallback<Status>,
@@ -37,7 +36,7 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapC
     private lateinit var latitude: String
     private lateinit var longitude: String
     private val radius = 1000f
-    private var googleApiClient: GoogleApiClient? = null
+    private lateinit var googleApiClient: GoogleApiClient
     private val REQUEST_LOCATION_PERMISSION_CODE = 101
     private var pendingIntent: PendingIntent? = null
     private var markerOptions: MarkerOptions? = null
@@ -52,10 +51,10 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapC
         initGMaps()
 
         val i = intent
-//        latitude = i.getStringExtra("latitude")
-//        longitude = i.getStringExtra("longitude")
-        latitude = "-7.9383956"
-        longitude = "112.6301241"
+        latitude = i.getStringExtra("latitude")
+        longitude = i.getStringExtra("longitude")
+//        latitude = "-7.9383956"
+//        longitude = "112.6301241"
     }
 
     private fun initGMaps() {
@@ -87,15 +86,8 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapC
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return
         }
 
@@ -103,22 +95,9 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapC
         googleMap?.setMinZoomPreference(15f)
         googleMap?.isMyLocationEnabled = true
         googleMap?.setOnMapClickListener(this)
-        googleMap?.addMarker(
-            MarkerOptions().position(
-                LatLng(
-                    latitude.toDouble(),
-                    longitude.toDouble()
-                )
-            )
-        )
-        googleMap?.moveCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(
-                    latitude.toDouble(),
-                    longitude.toDouble()
-                ), 15f
-            )
-        )
+
+        googleMap?.addMarker(MarkerOptions().position(LatLng(latitude.toDouble(), longitude.toDouble())).title("Location"))
+        googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude.toDouble(), longitude.toDouble()), 15f))
         googleMap?.mapType = GoogleMap.MAP_TYPE_NORMAL
 
         googleMap?.addCircle(
@@ -130,26 +109,46 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapC
                 .zIndex(55f)
                 .strokeWidth(6f)
         )
+
+        googleMap?.addPolygon(
+            PolygonOptions()
+                .add(
+                    LatLng(32.974508, -97.334948),
+                    LatLng(32.973239, -97.329873),
+                    LatLng(32.970606, -97.332519),
+                    LatLng(32.970785, -97.335965)
+                )
+                .strokeColor(Color.RED)
+                .strokeWidth(7f)
+                .fillColor(Color.argb(25, 255, 0, 0))
+        )
+
+        googleMap?.addPolygon(
+            PolygonOptions()
+                .add(
+                    LatLng(32.772467, -96.618180),
+                    LatLng(32.773177, -96.610702),
+                    LatLng(32.769388, -96.610638),
+                    LatLng(32.767913, -96.614325)
+                )
+                .strokeColor(Color.RED)
+                .strokeWidth(7f)
+                .fillColor(Color.argb(25, 255, 0, 0))
+        )
     }
 
     private fun startLocationMonitor() {
         Log.d(TAG, "start location monitor")
 
         try {
-            mFusedLocationClient?.lastLocation?.addOnSuccessListener(object :
-                OnSuccessListener<Location> {
-                override fun onSuccess(location: Location?) {
-                    if (location != null) {
-                        markerOptions = MarkerOptions()
-                        markerOptions?.position(LatLng(location.latitude, location.longitude))
-                        markerOptions?.title(getString(R.string.current_loc_txt))
-                        Log.d(
-                            TAG,
-                            "Location Change Lat Lng" + location.latitude + "" + location.longitude
-                        )
-                    }
+            mFusedLocationClient?.lastLocation?.addOnSuccessListener { location ->
+                if (location != null) {
+                    markerOptions = MarkerOptions()
+                    markerOptions?.position(LatLng(location.latitude, location.longitude))
+                    markerOptions?.title(getString(R.string.current_loc_txt))
+                    Log.d(TAG, "Location Change Lat Lng" + location.latitude + "" + location.longitude)
                 }
-            })
+            }
         } catch (e: SecurityException) {
             Log.d(TAG, e.message.toString())
         }
@@ -164,8 +163,8 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapC
             .addGeofence(getGeofence())
             .build()
 
-        if (!googleApiClient?.isConnected()!!) {
-            Log.d(TAG, "Google Api Client is not Connected");
+        if (!googleApiClient.isConnected) {
+            Log.d(TAG, "Google Api Client is not Connected")
         } else {
             try {
                 mGeofencingClient!!.addGeofences(geofencingRequest, pendingIntent)
@@ -179,32 +178,22 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapC
         }
     }
 
-    private fun getGeofencingPendingIntent(): PendingIntent? {
-        if (pendingIntent != null) {
-            return pendingIntent
-        }
-
-        val intent = Intent(this, GeofenceRegistrationService::class.java)
-        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-    }
-
     private fun getGeofence(): Geofence? {
         return Geofence.Builder()
             .setRequestId(GEOFENCE_ID)
-            .setCircularRegion(
-                latitude.toDouble(),
-                longitude.toDouble(),
-                android.R.attr.radius.toFloat()
-            )
+            .setCircularRegion(latitude.toDouble(), longitude.toDouble(), radius)
             .setNotificationResponsiveness(NOTIFICATION_RESPONSIVENESS)
             .setExpirationDuration(Geofence.NEVER_EXPIRE)
             .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
             .build()
     }
 
-    override fun onStart() {
-        super.onStart()
-        googleApiClient?.reconnect()
+    private fun getGeofencingPendingIntent(): PendingIntent? {
+        if (pendingIntent != null) {
+            return pendingIntent
+        }
+        val intent = Intent(this, GeofenceRegistrationService::class.java)
+        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
     override fun onPause() {
@@ -218,29 +207,38 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapC
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        googleApiClient.reconnect()
+    }
+
     override fun onStop() {
         super.onStop()
-        googleApiClient?.disconnect()
-    }
-
-    override fun onMapClick(latLng: LatLng?) {
-        Log.i(TAG, "latLog:" + latLng.toString())
-    }
-
-    override fun onConnected(p0: Bundle?) {
-        startGeofencing()
-        startLocationMonitor()
-    }
-
-    override fun onConnectionSuspended(p0: Int) {
-        Log.d(TAG, "Google Connection Suspended")
-    }
-
-    override fun onConnectionFailed(connectionResult: ConnectionResult) {
-        Log.e(TAG, "Connection Failed:" + connectionResult.getErrorMessage());
+        googleApiClient.disconnect()
     }
 
     override fun onResult(status: Status) {
         Log.i(TAG, "onResult: " + status)
+    }
+
+    override fun onConnected(bundle: Bundle?) {
+        startGeofencing()
+        startLocationMonitor()
+    }
+
+    override fun onConnectionSuspended(i: Int) {
+        Log.d(TAG, "Google Connection Suspended")
+    }
+
+    override fun onConnectionFailed(connectionResult: ConnectionResult) {
+        Log.e(TAG, "Connection Failed:" + connectionResult.errorMessage)
+    }
+
+    override fun onPointerCaptureChanged(hasCapture: Boolean) {
+
+    }
+
+    override fun onMapClick(latLng: LatLng?) {
+        Log.i(TAG, "latLog:" + latLng.toString())
     }
 }
