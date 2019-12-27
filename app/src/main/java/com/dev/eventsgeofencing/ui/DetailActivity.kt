@@ -1,9 +1,9 @@
 package com.dev.eventsgeofencing.ui
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.dev.eventsgeofencing.BuildConfig
 import com.dev.eventsgeofencing.R
 import com.dev.eventsgeofencing.model.response.ResponseEvents

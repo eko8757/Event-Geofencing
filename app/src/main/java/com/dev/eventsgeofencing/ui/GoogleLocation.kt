@@ -1,182 +1,246 @@
 package com.dev.eventsgeofencing.ui
 
 import android.Manifest
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
+import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Criteria
-import android.location.LocationManager
+import android.graphics.Color
+import android.location.Location
+import android.os.Build
 import android.os.Bundle
-import android.view.View
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import android.util.Log
 import com.dev.eventsgeofencing.R
-import com.dev.eventsgeofencing.notification.BaseReminder
-import com.dev.eventsgeofencing.notification.Reminder
-import com.dev.eventsgeofencing.utils.showReminderInMap
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import com.dev.eventsgeofencing.geofencing.GeofenceRegistrationService
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.common.api.ResultCallback
+import com.google.android.gms.common.api.Status
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_google_location.*
+import com.google.android.gms.maps.model.CircleOptions
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.tasks.OnSuccessListener
 
-class GoogleLocation : BaseReminder(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener,
+    GoogleApiClient.ConnectionCallbacks, ResultCallback<Status>,
+    GoogleApiClient.OnConnectionFailedListener {
 
-    private var map: GoogleMap? = null
-    private lateinit var locationManager: LocationManager
+    private val GEOFENCE_ID = "Geofence"
+    private val NOTIFICATION_RESPONSIVENESS = 1000
     private lateinit var latitude: String
     private lateinit var longitude: String
-    private var reminder = Reminder(latLng = null, radius = null, message = null)
+    private val radius = 1000f
+    private var googleApiClient: GoogleApiClient? = null
+    private val REQUEST_LOCATION_PERMISSION_CODE = 101
+    private var pendingIntent: PendingIntent? = null
+    private var markerOptions: MarkerOptions? = null
+    private var TAG: String = GoogleLocation::class.java.simpleName
+    private var mFusedLocationClient: FusedLocationProviderClient? = null
+    private var mGeofencingClient: GeofencingClient? = null
 
-    companion object {
-        private const val MY_LOCATION_REQUEST_CODE = 329
-        private const val NEW_REMINDER_REQUEST_CODE = 330
-        private const val EXTRA_LAT_LNG = "EXTRA_LAT_LNG"
-
-        fun newIntent(context: Context, latLng: LatLng): Intent {
-            val intent = Intent(context, GoogleLocation::class.java)
-            intent.putExtra(EXTRA_LAT_LNG, latLng)
-            return intent
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_google_location)
+        initGMaps()
 
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
-
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                MY_LOCATION_REQUEST_CODE
-            )
-        }
-
-        //for put extra data lat & lng from detail activity
         val i = intent
-        latitude = i.getStringExtra("latitude")
-        longitude = i.getStringExtra("longitude")
+//        latitude = i.getStringExtra("latitude")
+//        longitude = i.getStringExtra("longitude")
+        latitude = "-7.9383956"
+        longitude = "112.6301241"
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        finish()
-        return true
+    private fun initGMaps() {
+        mGeofencingClient = LocationServices.getGeofencingClient(this)
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment?.getMapAsync(this)
+        googleApiClient = GoogleApiClient.Builder(this)
+            .addApi(LocationServices.API)
+            .addConnectionCallbacks(this)
+            .addOnConnectionFailedListener(this)
+            .build()
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ), REQUEST_LOCATION_PERMISSION_CODE
+                )
+            }
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
-        map = googleMap
-        map?.run {
-            uiSettings.isMyLocationButtonEnabled = false
-            uiSettings.isMapToolbarEnabled = false
-            setOnMarkerClickListener(this@GoogleLocation)
-        }
-        onMapPermissionReady()
-    }
-
-    override fun onMarkerClick(marker: Marker?): Boolean {
-        return true
-    }
-
-    @SuppressLint("RestrictedApi")
-    private fun onMapPermissionReady() {
-        if (map != null
-            && ContextCompat.checkSelfPermission(
+        if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
+            ) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
-            drawCircle(LatLng(latitude.toDouble(), longitude.toDouble()))
-            map?.isMyLocationEnabled = true
-            currentLocation.visibility = View.VISIBLE
+            return
+        }
 
-            //go to current device locations
-            currentLocation.setOnClickListener {
-                val bestProvider = locationManager.getBestProvider(Criteria(), false)
-                val location = locationManager.getLastKnownLocation(bestProvider)
-                if (location != null) {
-                    val latLng = LatLng(location.latitude, location.longitude)
-                    map?.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18f))
+        googleMap?.uiSettings?.isZoomControlsEnabled = true
+        googleMap?.setMinZoomPreference(15f)
+        googleMap?.isMyLocationEnabled = true
+        googleMap?.setOnMapClickListener(this)
+        googleMap?.addMarker(
+            MarkerOptions().position(
+                LatLng(
+                    latitude.toDouble(),
+                    longitude.toDouble()
+                )
+            )
+        )
+        googleMap?.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                LatLng(
+                    latitude.toDouble(),
+                    longitude.toDouble()
+                ), 15f
+            )
+        )
+        googleMap?.mapType = GoogleMap.MAP_TYPE_NORMAL
+
+        googleMap?.addCircle(
+            CircleOptions()
+                .center(LatLng(latitude.toDouble(), longitude.toDouble()))
+                .radius(radius.toDouble())
+                .strokeColor(Color.RED)
+                .fillColor(Color.argb(20, 0, 255, 0))
+                .zIndex(55f)
+                .strokeWidth(6f)
+        )
+    }
+
+    private fun startLocationMonitor() {
+        Log.d(TAG, "start location monitor")
+
+        try {
+            mFusedLocationClient?.lastLocation?.addOnSuccessListener(object :
+                OnSuccessListener<Location> {
+                override fun onSuccess(location: Location?) {
+                    if (location != null) {
+                        markerOptions = MarkerOptions()
+                        markerOptions?.position(LatLng(location.latitude, location.longitude))
+                        markerOptions?.title(getString(R.string.current_loc_txt))
+                        Log.d(
+                            TAG,
+                            "Location Change Lat Lng" + location.latitude + "" + location.longitude
+                        )
+                    }
                 }
-            }
-            centerCamera()
-        }
-    }
-
-    //for add radius in target locations
-    private fun drawCircle(point: LatLng) {
-        val valueRadius = getRadius(1000)
-        reminder.radius = valueRadius
-        reminder.latLng = point
-        reminder.message = "Sudah sampai tujuan!"
-        addReminder(reminder)
-        showReminderUpdate(reminder)
-    }
-
-    private fun showReminderUpdate(reminder: Reminder) {
-        map?.clear()
-        map?.let { showReminderInMap(this, it, reminder) }
-    }
-
-    private fun showReminders() {
-        map?.run {
-            clear()
-            for (reminder in getRepository().getAll()) {
-                showReminderInMap(this@GoogleLocation, this, reminder)
-            }
-        }
-    }
-
-    private fun addReminder(reminder: Reminder) {
-        getRepository().add(reminder,
-            success = {
-                setResult(Activity.RESULT_OK)
-                finish()
-            },
-            failure = {
-                Snackbar.make(main, it, Snackbar.LENGTH_SHORT).show()
             })
-    }
-
-    private fun getRadius(radius: Int): Double {
-        return radius.toDouble()
-    }
-
-    private fun centerCamera() {
-        if (intent.extras != null && intent.extras!!.containsKey(EXTRA_LAT_LNG)) {
-            val latLng = intent.extras!!.get(EXTRA_LAT_LNG) as LatLng
-            map?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+        } catch (e: SecurityException) {
+            Log.d(TAG, e.message.toString())
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == MY_LOCATION_REQUEST_CODE) {
-            onMapPermissionReady()
+    private fun startGeofencing() {
+        Log.d(TAG, "Start geofencing monitoring call")
+        pendingIntent = getGeofencingPendingIntent()
+
+        val geofencingRequest = GeofencingRequest.Builder()
+            .setInitialTrigger(Geofence.GEOFENCE_TRANSITION_ENTER)
+            .addGeofence(getGeofence())
+            .build()
+
+        if (!googleApiClient?.isConnected()!!) {
+            Log.d(TAG, "Google Api Client is not Connected");
+        } else {
+            try {
+                mGeofencingClient!!.addGeofences(geofencingRequest, pendingIntent)
+                    .addOnSuccessListener { Log.d(TAG, "Successfully Geofencing Connected") }
+                    .addOnFailureListener { e ->
+                        Log.d(TAG, "Failed to add Geofencing " + e.message)
+                    }
+            } catch (e: SecurityException) {
+                Log.d(TAG, e.message)
+            }
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == NEW_REMINDER_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            showReminders()
-            val reminder = getRepository().getLast()
-            map?.moveCamera(CameraUpdateFactory.newLatLngZoom(reminder?.latLng, 15f))
-            Snackbar.make(main, "Success", Snackbar.LENGTH_SHORT).show()
+    private fun getGeofencingPendingIntent(): PendingIntent? {
+        if (pendingIntent != null) {
+            return pendingIntent
         }
+
+        val intent = Intent(this, GeofenceRegistrationService::class.java)
+        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    }
+
+    private fun getGeofence(): Geofence? {
+        return Geofence.Builder()
+            .setRequestId(GEOFENCE_ID)
+            .setCircularRegion(
+                latitude.toDouble(),
+                longitude.toDouble(),
+                android.R.attr.radius.toFloat()
+            )
+            .setNotificationResponsiveness(NOTIFICATION_RESPONSIVENESS)
+            .setExpirationDuration(Geofence.NEVER_EXPIRE)
+            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
+            .build()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        googleApiClient?.reconnect()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        val response: Int = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this)
+        if (response != ConnectionResult.SUCCESS) {
+            Log.d(TAG, "Google Play Service Not Available")
+            GoogleApiAvailability.getInstance().getErrorDialog(this, response, 1).show()
+        } else {
+            Log.d(TAG, "Google play service available")
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        googleApiClient?.disconnect()
+    }
+
+    override fun onMapClick(latLng: LatLng?) {
+        Log.i(TAG, "latLog:" + latLng.toString())
+    }
+
+    override fun onConnected(p0: Bundle?) {
+        startGeofencing()
+        startLocationMonitor()
+    }
+
+    override fun onConnectionSuspended(p0: Int) {
+        Log.d(TAG, "Google Connection Suspended")
+    }
+
+    override fun onConnectionFailed(connectionResult: ConnectionResult) {
+        Log.e(TAG, "Connection Failed:" + connectionResult.getErrorMessage());
+    }
+
+    override fun onResult(status: Status) {
+        Log.i(TAG, "onResult: " + status)
     }
 }
