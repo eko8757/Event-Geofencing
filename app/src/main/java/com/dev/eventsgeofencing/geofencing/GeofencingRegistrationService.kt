@@ -78,12 +78,14 @@ class GeofenceRegistrationService : IntentService(TAG) {
         stackBuilder.addParentStack(GoogleLocation::class.java)
         stackBuilder.addNextIntent(notificationIntent)
 
-        val notificationPendingIntent: PendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+        val notificationPendingIntent: PendingIntent =
+            stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
         val notificationMng = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name: CharSequence = getString(R.string.app_name)
-            val mChannel = NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH)
+            val mChannel =
+                NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH)
             mChannel.enableLights(true)
             mChannel.lightColor = Color.RED
             mChannel.vibrationPattern = longArrayOf(0, 1000, 500, 1000)
@@ -102,7 +104,10 @@ class GeofenceRegistrationService : IntentService(TAG) {
     }
 
     // Create a notification
-    private fun createNotification(msg: String, notificationPendingIntent: PendingIntent): Notification {
+    private fun createNotification(
+        msg: String,
+        notificationPendingIntent: PendingIntent
+    ): Notification {
         Log.i(TAG, "createNotification: $msg")
 
         val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)

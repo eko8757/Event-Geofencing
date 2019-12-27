@@ -86,8 +86,15 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapC
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             return
         }
 
@@ -96,8 +103,22 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapC
         googleMap?.isMyLocationEnabled = true
         googleMap?.setOnMapClickListener(this)
 
-        googleMap?.addMarker(MarkerOptions().position(LatLng(latitude.toDouble(), longitude.toDouble())).title("Location"))
-        googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(latitude.toDouble(), longitude.toDouble()), 15f))
+        googleMap?.addMarker(
+            MarkerOptions().position(
+                LatLng(
+                    latitude.toDouble(),
+                    longitude.toDouble()
+                )
+            ).title("Location")
+        )
+        googleMap?.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                LatLng(
+                    latitude.toDouble(),
+                    longitude.toDouble()
+                ), 15f
+            )
+        )
         googleMap?.mapType = GoogleMap.MAP_TYPE_NORMAL
 
         googleMap?.addCircle(
@@ -146,7 +167,10 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapC
                     markerOptions = MarkerOptions()
                     markerOptions?.position(LatLng(location.latitude, location.longitude))
                     markerOptions?.title(getString(R.string.current_loc_txt))
-                    Log.d(TAG, "Location Change Lat Lng" + location.latitude + "" + location.longitude)
+                    Log.d(
+                        TAG,
+                        "Location Change Lat Lng" + location.latitude + "" + location.longitude
+                    )
                 }
             }
         } catch (e: SecurityException) {
