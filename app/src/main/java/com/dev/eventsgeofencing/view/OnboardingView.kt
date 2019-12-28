@@ -20,10 +20,6 @@ interface OnboardingView {
         fun showDialog(result: String)
     }
 
-    interface LogoutView {
-
-    }
-
     interface LandingView {
         fun buttonLogin()
         fun buttonSignUp()

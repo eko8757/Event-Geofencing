@@ -19,10 +19,10 @@ class LoginPresenter(
 ) {
     private var mCompositeDisposable: CompositeDisposable? = null
 
-    fun postLogin(username: String, password: String) {
+    fun postLogin(nama: String, password: String) {
 
         view.showProgress()
-        val dataLogin = PostLogin(username, password)
+        val dataLogin = PostLogin(nama, password)
         mCompositeDisposable = CompositeDisposable()
         mCompositeDisposable?.add(
             factory.postDataLogin(dataLogin)
@@ -40,7 +40,7 @@ class LoginPresenter(
                             view.successLogin()
                             view.hideProgress()
                         } else {
-                            Log.d("RESULT_CODE", t.body()?.code)
+                            Log.d("RESULT_CODE", t.code().toString())
                             view.hideProgress()
                             view.showDialog(t.body()?.message.toString())
                         }

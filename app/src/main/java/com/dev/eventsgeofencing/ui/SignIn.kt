@@ -2,11 +2,8 @@ package com.dev.eventsgeofencing.ui
 
 import android.app.ProgressDialog
 import android.content.Intent
-import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -53,9 +50,9 @@ class SignIn : AppCompatActivity(), OnboardingView.SignInView, View.OnClickListe
     }
 
     override fun checkForm() {
-        val username = ed_username_login.text.toString()
+        val nama = ed_username_login.text.toString()
         val password = ed_password_login.text.toString()
-        presenter.postLogin(username, password)
+        presenter.postLogin(nama, password)
     }
 
     override fun successLogin() {

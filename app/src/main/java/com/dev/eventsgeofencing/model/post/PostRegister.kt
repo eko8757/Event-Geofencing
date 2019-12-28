@@ -9,15 +9,16 @@ data class PostRegister(
     @Expose
     var nama: String?,
 
-    @SerializedName("password")
-    @Expose
-    var password: String?,
-
     @SerializedName("email")
     @Expose
     var email: String?,
 
     @SerializedName("kontak")
     @Expose
-    var kontak: String?
+    var kontak: String?,
+
+    @SerializedName("password")
+    @Expose
+    var password: String?
+
 )
