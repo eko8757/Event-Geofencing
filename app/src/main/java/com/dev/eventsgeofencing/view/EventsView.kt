@@ -14,10 +14,4 @@ interface EventsView {
     interface EventsDetail {
        fun goToLocation()
     }
-
-    interface LocationsView {
-        fun permissionsReady()
-        fun currentLocations()
-        fun centerCamera()
-    }
 }

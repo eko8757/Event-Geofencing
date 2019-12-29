@@ -48,7 +48,7 @@
         android:installLocation="auto"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".ui.GoogleLocation"
+            android:name=".ui.Location"
             android:label="Location"
             android:parentActivityName=".ui.DetailActivity"
             android:screenOrientation="portrait"/>

@@ -1,19 +1,6 @@
 package com.dev.eventsgeofencing.utils
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.TaskStackBuilder
-import android.content.Context
-import android.os.Build
 import android.view.View
-import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
-import com.dev.eventsgeofencing.BuildConfig
-import com.dev.eventsgeofencing.R
-import com.dev.eventsgeofencing.ui.GoogleLocation
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.*
 
 fun View.visible() {
     visibility = View.VISIBLE

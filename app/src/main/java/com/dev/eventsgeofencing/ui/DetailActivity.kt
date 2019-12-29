@@ -8,8 +8,6 @@ import com.dev.eventsgeofencing.BuildConfig
 import com.dev.eventsgeofencing.R
 import com.dev.eventsgeofencing.model.response.ResponseEvents
 import com.dev.eventsgeofencing.view.EventsView
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.PolygonOptions
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_detail.*
 
@@ -44,7 +42,7 @@ class DetailActivity : AppCompatActivity(), EventsView.EventsDetail, View.OnClic
     }
 
     override fun goToLocation() {
-        val i = Intent(this, GoogleLocation::class.java)
+        val i = Intent(this, Location::class.java)
         i.putExtra("longitude", item?.longitude)
         i.putExtra("latitude", item?.latitude)
         startActivity(i)

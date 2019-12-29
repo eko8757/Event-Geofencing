@@ -27,7 +27,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolygonOptions
 
-class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener,
+class Location : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickListener,
     GoogleApiClient.ConnectionCallbacks, ResultCallback<Status>,
     GoogleApiClient.OnConnectionFailedListener {
 
@@ -40,7 +40,7 @@ class GoogleLocation : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapC
     private val REQUEST_LOCATION_PERMISSION_CODE = 101
     private var pendingIntent: PendingIntent? = null
     private var markerOptions: MarkerOptions? = null
-    private var TAG: String = GoogleLocation::class.java.simpleName
+    private var TAG: String = Location::class.java.simpleName
     private var mFusedLocationClient: FusedLocationProviderClient? = null
     private var mGeofencingClient: GeofencingClient? = null
 

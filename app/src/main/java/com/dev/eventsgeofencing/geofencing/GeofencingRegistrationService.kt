@@ -11,7 +11,7 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.dev.eventsgeofencing.R
-import com.dev.eventsgeofencing.ui.GoogleLocation
+import com.dev.eventsgeofencing.ui.Location
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofenceStatusCodes
 import com.google.android.gms.location.GeofencingEvent
@@ -75,7 +75,7 @@ class GeofenceRegistrationService : IntentService(TAG) {
 
         val notificationIntent = Intent()
         val stackBuilder: TaskStackBuilder = TaskStackBuilder.create(this)
-        stackBuilder.addParentStack(GoogleLocation::class.java)
+        stackBuilder.addParentStack(Location::class.java)
         stackBuilder.addNextIntent(notificationIntent)
 
         val notificationPendingIntent: PendingIntent =
