@@ -17,7 +17,7 @@ class SignUpPresenter(val view: OnboardingView.SignUpView, var factory: BaseApi)
 
     fun postData(namaResult: String, emailResult: String, kontakResult: String, passwordResult: String) {
         view.showProgress()
-        val postRegister = PostRegister(namaResult, emailResult, kontakResult, passwordResult)
+        val postRegister = PostRegister(emailResult, kontakResult, namaResult, passwordResult)
         mCompositeDisposable = CompositeDisposable()
         mCompositeDisposable?.add(
             factory.postDataRegister(postRegister)
@@ -29,8 +29,7 @@ class SignUpPresenter(val view: OnboardingView.SignUpView, var factory: BaseApi)
                     }
 
                     override fun onNext(t: Response<ResponseRegister>) {
-                        Log.d("ResponseRegister", t.code().toString())
-                        if (t.code() == 200) {
+                        if (t.body()?.code.equals("200", ignoreCase = true)) {
                             view.successRegister()
                             view.hideProgress()
                         } else {
@@ -43,8 +42,7 @@ class SignUpPresenter(val view: OnboardingView.SignUpView, var factory: BaseApi)
                         view.hideProgress()
                         view.showToast(e.message.toString())
                     }
-                }
-                )
+                })
         )
     }
 }

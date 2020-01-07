@@ -34,6 +34,7 @@ class LoginPresenter(
                     }
 
                     override fun onNext(t: Response<ResponseLogin>) {
+                        Log.d("ResponseLogin", t.body()?.message.toString())
                         if (t.code() == 200) {
                             val resultToken = t.body()?.token.toString()
                             Prefs.putString(StaticString().TOKEN, resultToken)

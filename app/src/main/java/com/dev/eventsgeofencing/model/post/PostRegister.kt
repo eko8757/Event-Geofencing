@@ -5,20 +5,19 @@ import com.google.gson.annotations.SerializedName
 
 data class PostRegister(
 
-    @SerializedName("nama")
-    @Expose
-    var nama: String?,
-
     @SerializedName("email")
     @Expose
-    var email: String?,
+    val email: String,
 
     @SerializedName("kontak")
     @Expose
-    var kontak: String?,
+    val kontak: String,
+
+    @SerializedName("nama")
+    @Expose
+    val nama: String,
 
     @SerializedName("password")
     @Expose
-    var password: String?
-
+    val password: String
 )

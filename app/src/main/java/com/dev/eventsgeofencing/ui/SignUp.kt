@@ -58,7 +58,7 @@ class SignUp : AppCompatActivity(), OnboardingView.SignUpView, View.OnClickListe
 
     override fun successRegister() {
         if (connectionDetector.isConnectingToInternet(context = this)) {
-            val i = Intent(this, SignIn::class.java)
+            val i = Intent(this, MainActivity::class.java)
             startActivity(i)
             finish()
         } else {
