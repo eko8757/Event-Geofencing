@@ -3,21 +3,20 @@ package com.dev.eventsgeofencing.model.post
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-data class PostRegister(
+class PostRegister {
+    @SerializedName("nama")
+    @Expose
+    var nama: String? = null
 
     @SerializedName("email")
     @Expose
-    val email: String,
+    var email: String? = null
 
     @SerializedName("kontak")
     @Expose
-    val kontak: String,
-
-    @SerializedName("nama")
-    @Expose
-    val nama: String,
+    var kontak: String? = null
 
     @SerializedName("password")
     @Expose
-    val password: String
-)
+    var password: String? = null
+}

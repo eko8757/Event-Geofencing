@@ -16,7 +16,6 @@ import com.dev.eventsgeofencing.utils.ConnectionDetector
 import com.dev.eventsgeofencing.view.OnboardingView
 import kotlinx.android.synthetic.main.activity_sign_up.*
 
-@Suppress("DEPRECATION")
 class SignUp : AppCompatActivity(), OnboardingView.SignUpView, View.OnClickListener {
 
     private lateinit var progressDialog: ProgressDialog
@@ -29,9 +28,9 @@ class SignUp : AppCompatActivity(), OnboardingView.SignUpView, View.OnClickListe
 
         val factory: BaseApi = BaseApi.create()
         presenter = SignUpPresenter(this, factory)
-        btn_sign_up.setOnClickListener(this)
         connectionDetector = ConnectionDetector()
         connectionDetector.isConnectingToInternet(context = this)
+        btn_sign_up.setOnClickListener(this)
     }
 
     override fun onClick(v: View?) {
@@ -45,11 +44,11 @@ class SignUp : AppCompatActivity(), OnboardingView.SignUpView, View.OnClickListe
         val email = ed_email.text.toString()
         val kontak = ed_kontak.text.toString()
         val password = ed_password.text.toString()
-        if (nama.isEmpty() && email.isEmpty() && kontak.isEmpty() && password.isEmpty()) {
+        if (nama.isEmpty() || email.isEmpty() || kontak.isEmpty() || password.isEmpty()) {
             showToast("Field cannot be empty")
         } else {
             if (connectionDetector.isConnectingToInternet(context = this)) {
-                presenter.postData(nama, email, kontak, password)
+                presenter.postRegister(nama, email, kontak, password)
             } else {
                 showToast("Connection lost")
             }

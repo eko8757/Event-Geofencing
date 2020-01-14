@@ -3,11 +3,11 @@ package com.dev.eventsgeofencing.model.response
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-data class ResponseRegister (
+class ResponseRegister {
     @SerializedName("code")
     @Expose
-    val code: String,
+    var code: String? = null
     @SerializedName("message")
     @Expose
-    val message: String
-)
+    var message: String? = null
+}

@@ -14,4 +14,10 @@ interface EventsView {
     interface EventsDetail {
        fun goToLocation()
     }
+
+    interface ProfileView {
+        fun showProgress()
+        fun hideProgress()
+        fun btnUpdate()
+    }
 }

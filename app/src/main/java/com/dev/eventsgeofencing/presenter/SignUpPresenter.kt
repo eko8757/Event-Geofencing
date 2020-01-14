@@ -11,16 +11,26 @@ import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import retrofit2.Response
 
-class SignUpPresenter(val view: OnboardingView.SignUpView, var factory: BaseApi) {
+class SignUpPresenter(val view: OnboardingView.SignUpView, val factory: BaseApi) {
 
-    private var mCompositeDisposable: CompositeDisposable? = null
+    private var mCompisiteDisposable: CompositeDisposable? = null
 
-    fun postData(namaResult: String, emailResult: String, kontakResult: String, passwordResult: String) {
+    fun postRegister(
+        nama: String,
+        email: String,
+        kontak: String,
+        password: String
+    ) {
         view.showProgress()
-        val postRegister = PostRegister(emailResult, kontakResult, namaResult, passwordResult)
-        mCompositeDisposable = CompositeDisposable()
-        mCompositeDisposable?.add(
-            factory.postDataRegister(postRegister)
+        val post = PostRegister()
+        post.nama = nama
+        post.email = email
+        post.kontak = kontak
+        post.password = password
+
+        mCompisiteDisposable = CompositeDisposable()
+        mCompisiteDisposable?.add(
+            factory.postDataRegister(post)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribeWith(object : DisposableObserver<Response<ResponseRegister>>() {
@@ -29,18 +39,20 @@ class SignUpPresenter(val view: OnboardingView.SignUpView, var factory: BaseApi)
                     }
 
                     override fun onNext(t: Response<ResponseRegister>) {
-                        if (t.body()?.code.equals("200", ignoreCase = true)) {
+                        Log.d("ResultRegister", t.body()?.code.toString())
+                        Log.d("ResultRegisterError", t.errorBody().toString())
+                        if (t.code() == 200) {
                             view.successRegister()
                             view.hideProgress()
                         } else {
                             view.hideProgress()
-                            view.showDialog(t.body()?.message.toString())
+                            view.showDialog(t.message().toString())
                         }
                     }
 
                     override fun onError(e: Throwable) {
-                        view.hideProgress()
                         view.showToast(e.message.toString())
+                        view.hideProgress()
                     }
                 })
         )
