@@ -19,10 +19,13 @@ import com.google.android.gms.location.GeofencingEvent
 @SuppressLint("Registered")
 class GeofenceRegistrationService : IntentService(TAG) {
 
+    private lateinit var NAMA_EVENT: String
+
     companion object {
         private const val TAG = "GeoIntentService"
         private const val CHANNEL_ID = "channel_01"
         private const val GEOFENCE_ID = "Geofence"
+
 
         private fun getErrorString(errorCode: Int): String {
             return when (errorCode) {
@@ -35,6 +38,12 @@ class GeofenceRegistrationService : IntentService(TAG) {
     }
 
     override fun onHandleIntent(intent: Intent?) {
+        if (intent != null) {
+            val name: String = intent.getStringExtra("name")
+            NAMA_EVENT = "Kamu berada disekitar event $name"
+        } else {
+            NAMA_EVENT = getString(R.string.geofence_txt)
+        }
         val geofencingEvent = GeofencingEvent.fromIntent(intent)!!
         if (geofencingEvent.hasError()) {
             Log.d(TAG, "GeofencingEvent error " + geofencingEvent.errorCode)
@@ -109,12 +118,11 @@ class GeofenceRegistrationService : IntentService(TAG) {
         notificationPendingIntent: PendingIntent
     ): Notification {
         Log.i(TAG, "createNotification: $msg")
-
         val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
         notificationBuilder.setSmallIcon(R.drawable.logo)
             .setLargeIcon(BitmapFactory.decodeResource(resources, R.drawable.logo))
             .setContentTitle(msg)
-            .setContentText(getString(R.string.geofence_txt))
+            .setContentText(NAMA_EVENT)
             .setWhen(System.currentTimeMillis())
             .setContentIntent(notificationPendingIntent)
             .setStyle(NotificationCompat.DecoratedCustomViewStyle())

@@ -35,6 +35,7 @@ class Location : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickLi
     private val NOTIFICATION_RESPONSIVENESS = 1000
     private lateinit var latitude: String
     private lateinit var longitude: String
+    private lateinit var namaEvent: String
     private val radius = 1000f
     private lateinit var googleApiClient: GoogleApiClient
     private val REQUEST_LOCATION_PERMISSION_CODE = 101
@@ -51,10 +52,11 @@ class Location : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickLi
         initGMaps()
 
         val i = intent
-        latitude = i.getStringExtra("latitude")
-        longitude = i.getStringExtra("longitude")
-//        latitude = "-7.9383956"
-//        longitude = "112.6301241"
+//        latitude = i.getStringExtra("latitude")
+//        longitude = i.getStringExtra("longitude")
+        namaEvent = i.getStringExtra("namaEvent")
+        latitude = "-7.9383956"
+        longitude = "112.6301241"
     }
 
     private fun initGMaps() {
@@ -217,6 +219,7 @@ class Location : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickLi
             return pendingIntent
         }
         val intent = Intent(this, GeofenceRegistrationService::class.java)
+        intent.putExtra("name", namaEvent)
         return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 

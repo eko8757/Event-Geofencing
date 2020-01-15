@@ -11,7 +11,6 @@ import com.dev.eventsgeofencing.view.EventsView
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_detail.*
 
-
 class DetailActivity : AppCompatActivity(), EventsView.EventsDetail, View.OnClickListener {
 
     var item: ResponseEvents.Event? = null
@@ -23,7 +22,7 @@ class DetailActivity : AppCompatActivity(), EventsView.EventsDetail, View.OnClic
         btn_go_to_location.setOnClickListener(this)
     }
 
-    private fun loadData() {
+        private fun loadData() {
         val i = intent
         item = i.getParcelableExtra("idEvent")
 
@@ -45,6 +44,7 @@ class DetailActivity : AppCompatActivity(), EventsView.EventsDetail, View.OnClic
         val i = Intent(this, Location::class.java)
         i.putExtra("longitude", item?.longitude)
         i.putExtra("latitude", item?.latitude)
+        i.putExtra("namaEvent", item?.nama)
         startActivity(i)
     }
 

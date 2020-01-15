@@ -4,7 +4,9 @@ import android.util.Log
 import com.dev.eventsgeofencing.model.post.PostRegister
 import com.dev.eventsgeofencing.model.response.ResponseRegister
 import com.dev.eventsgeofencing.services.BaseApi
+import com.dev.eventsgeofencing.utils.StaticString
 import com.dev.eventsgeofencing.view.OnboardingView
+import com.pixplicity.easyprefs.library.Prefs
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
@@ -42,6 +44,8 @@ class SignUpPresenter(val view: OnboardingView.SignUpView, val factory: BaseApi)
                         Log.d("ResultRegister", t.body()?.code.toString())
                         Log.d("ResultRegisterError", t.errorBody().toString())
                         if (t.code() == 200) {
+                            val resultToken = t.body()?.token.toString()
+                            Prefs.putString(StaticString().TOKEN, resultToken)
                             view.successRegister()
                             view.hideProgress()
                         } else {

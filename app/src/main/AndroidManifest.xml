@@ -48,14 +48,9 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
-        <activity android:name=".ui.ProfileActivity"
-            android:label="Profile"
-            android:parentActivityName=".ui.MainActivity"
-            android:screenOrientation="portrait"/>
         <activity
             android:name=".ui.Location"
             android:label="Location"
-            android:parentActivityName=".ui.DetailActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.DetailActivity"

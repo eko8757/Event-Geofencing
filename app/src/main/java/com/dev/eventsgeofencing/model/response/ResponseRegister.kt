@@ -7,7 +7,12 @@ class ResponseRegister {
     @SerializedName("code")
     @Expose
     var code: String? = null
+
     @SerializedName("message")
     @Expose
     var message: String? = null
+
+    @SerializedName("token")
+    @Expose
+    var token: String? = null
 }

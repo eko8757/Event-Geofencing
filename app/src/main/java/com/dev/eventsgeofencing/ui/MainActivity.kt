@@ -67,11 +67,6 @@ class MainActivity : AppCompatActivity(), EventsView.EventsList {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.profile -> {
-                val i = Intent(this, ProfileActivity::class.java)
-                startActivity(i)
-            }
-
             R.id.logout -> {
                 Prefs.remove(StaticString().TOKEN)
                 val i = Intent(this, LandingPage::class.java)
