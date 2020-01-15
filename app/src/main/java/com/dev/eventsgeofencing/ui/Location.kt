@@ -52,11 +52,9 @@ class Location : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMapClickLi
         initGMaps()
 
         val i = intent
-//        latitude = i.getStringExtra("latitude")
-//        longitude = i.getStringExtra("longitude")
+        latitude = i.getStringExtra("latitude")
+        longitude = i.getStringExtra("longitude")
         namaEvent = i.getStringExtra("namaEvent")
-        latitude = "-7.9383956"
-        longitude = "112.6301241"
     }
 
     private fun initGMaps() {
